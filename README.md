@@ -21,6 +21,7 @@ This Python script reads an Excel file with book metadata and generates **EPUB f
 - Windows-safe filenames with intelligent truncation and uniqueness handling.
 - Tab-separated log file listing all generated files.
 - Progress bar for monitoring conversion.
+- Fully configurable via **command-line arguments**.
 
 ---
 
@@ -30,3 +31,86 @@ This Python script reads an Excel file with book metadata and generates **EPUB f
 - Required Python packages:
   ```bash
   pip install pandas tqdm ebooklib openpyxl
+  ```
+
+> `openpyxl` is needed to read `.xlsx` files.
+
+---
+
+## Usage
+
+Run the script with optional command-line arguments:
+
+```bash
+python create_books.py [--excel EXCEL_FILE] [--output OUTPUT_DIR] [--log LOG_FILE] [--create-pbook]
+```
+
+### Arguments
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--excel` | Path to the Excel file | `books.xlsx` |
+| `--output` | Output directory for EPUB/PBOOK files | `pbooks/` next to Excel file |
+| `--log` | Path to the log file | `pbook_creation_log.txt` next to Excel file |
+| `--create-pbook` | Include this flag to also create `.pbook` files | Disabled by default |
+
+### Examples
+
+- Default run:
+  ```bash
+  python create_books.py
+  ```
+
+- Custom Excel and output folder:
+  ```bash
+  python create_books.py --excel mydata.xlsx --output output_books
+  ```
+
+- Save log to a custom path:
+  ```bash
+  python create_books.py --log /path/to/mylog.txt
+  ```
+
+- Also create `.pbook` files:
+  ```bash
+  python create_books.py --create-pbook
+  ```
+
+---
+
+## Example
+
+Excel row:
+
+| Title | Author | Publication Date | ISBN | Source | Language |
+|-------|--------|-----------------|------|--------|---------|
+| My Book | John Doe | 2025-01-01 | 1234567890 | LocalLibrary | en |
+
+Generated files:
+
+- `John Doe - My Book.epub`
+- `John Doe - My Book.pbook` *(if `--create-pbook` is used)*
+
+EPUB metadata:
+
+- Title: `My Book`
+- Author: `John Doe`
+- ISBN: `1234567890`
+- Source: `LocalLibrary`
+- Publication Date: `2025-01-01`
+- Language: `en`
+- Tag/Subject: `Physical`
+
+---
+
+## Notes
+
+- Filenames are sanitized for Windows compatibility (invalid characters replaced).  
+- If filenames are too long, they are intelligently truncated.  
+- Duplicate filenames are automatically made unique.
+
+---
+
+## License
+
+MIT License
