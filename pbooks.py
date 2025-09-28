@@ -94,6 +94,7 @@ def main():
     parser.add_argument("--output", help="Output directory for generated files (default: 'pbooks' next to Excel)")
     parser.add_argument("--log", help="Path to the log file (default: 'pbook_creation_log.txt' next to Excel)")
     parser.add_argument("--create-pbook", action="store_true", help="Also create .pbook files")
+    parser.add_argument("--no-epub", action="store_true", help="Disable EPUB creation")
     args = parser.parse_args()
 
     excel_file = args.excel
@@ -104,6 +105,7 @@ def main():
 
     log_file_path = args.log or os.path.join(base_dir, "pbook_creation_log.txt")
     CREATE_PBOOK = args.create_pbook
+    CREATE_EPUB = not args.no_epub
 
     # Read Excel
     df = pd.read_excel(excel_file)
@@ -135,16 +137,18 @@ def main():
                     f.write(f"source={source}\n")
                     f.write(f"publication_date={pub_date}\n")
                     f.write(f"language={language}\n")
+                    f.write("tag=Physical\n")
             else:
                 pbook_path = filepath_base + ".pbook"  # for logging only
             
-            # Create EPUB
-            create_epub_file(filepath_base, title, author, isbn, source, pub_date, language)
+            # Create EPUB if enabled
+            if CREATE_EPUB:
+                create_epub_file(filepath_base, title, author, isbn, source, pub_date, language)
             
             # Log entry
             log_file.write(f"{os.path.basename(pbook_path)}\t{author}\t{title}\t{truncated}\t{renamed}\n")
 
-    print(f"All {len(df)} files created. Log saved to '{log_file_path}'.")
+    print(f"All {len(df)} files processed. Log saved to '{log_file_path}'.")
 
 if __name__ == "__main__":
     main()

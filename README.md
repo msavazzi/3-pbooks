@@ -17,7 +17,7 @@ This Python script reads an Excel file with book metadata and generates **EPUB f
 - Creates **EPUB files** with:
   - Title, Author, ISBN, Source, Publication Date, Language
   - Tag/Subject: `Physical`
-- Optional `.pbook` file creation.
+- Optional `.pbook` file creation (includes `tag=Physical`)
 - Windows-safe filenames with intelligent truncation and uniqueness handling.
 - Tab-separated log file listing all generated files.
 - Progress bar for monitoring conversion.
@@ -42,7 +42,7 @@ This Python script reads an Excel file with book metadata and generates **EPUB f
 Run the script with optional command-line arguments:
 
 ```bash
-python create_books.py [--excel EXCEL_FILE] [--output OUTPUT_DIR] [--log LOG_FILE] [--create-pbook]
+python create_books.py [--excel EXCEL_FILE] [--output OUTPUT_DIR] [--log LOG_FILE] [--create-pbook] [--no-epub]
 ```
 
 ### Arguments
@@ -53,28 +53,34 @@ python create_books.py [--excel EXCEL_FILE] [--output OUTPUT_DIR] [--log LOG_FIL
 | `--output` | Output directory for EPUB/PBOOK files | `pbooks/` next to Excel file |
 | `--log` | Path to the log file | `pbook_creation_log.txt` next to Excel file |
 | `--create-pbook` | Include this flag to also create `.pbook` files | Disabled by default |
+| `--no-epub` | Disable EPUB creation | EPUB is created by default |
 
 ### Examples
 
-- Default run:
-  ```bash
-  python create_books.py
-  ```
+- Default run (EPUB only):
+```bash
+python create_books.py
+```
+
+- Only create `.pbook` files, no EPUB:
+```bash
+python create_books.py --create-pbook --no-epub
+```
+
+- Both EPUB and `.pbook`:
+```bash
+python create_books.py --create-pbook
+```
 
 - Custom Excel and output folder:
-  ```bash
-  python create_books.py --excel mydata.xlsx --output output_books
-  ```
+```bash
+python create_books.py --excel mydata.xlsx --output output_books
+```
 
 - Save log to a custom path:
-  ```bash
-  python create_books.py --log /path/to/mylog.txt
-  ```
-
-- Also create `.pbook` files:
-  ```bash
-  python create_books.py --create-pbook
-  ```
+```bash
+python create_books.py --log /path/to/mylog.txt
+```
 
 ---
 
@@ -88,7 +94,7 @@ Excel row:
 
 Generated files:
 
-- `John Doe - My Book.epub`
+- `John Doe - My Book.epub` *(if EPUB creation enabled)*
 - `John Doe - My Book.pbook` *(if `--create-pbook` is used)*
 
 EPUB metadata:
@@ -100,6 +106,19 @@ EPUB metadata:
 - Publication Date: `2025-01-01`
 - Language: `en`
 - Tag/Subject: `Physical`
+
+`.pbook` file content example:
+
+```
+[metadata]
+title=My Book
+author=John Doe
+ISBN=1234567890
+source=LocalLibrary
+publication_date=2025-01-01
+language=en
+tag=Physical
+```
 
 ---
 
