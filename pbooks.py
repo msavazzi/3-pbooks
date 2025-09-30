@@ -48,7 +48,7 @@ def make_unique(filepath):
     return unique_path, renamed
 
 # ---------------- EPUB Creation ----------------
-def create_epub_file(filepath_base, title, author, isbn, source, pub_date, language):
+def create_epub_file(filepath_base, title, author, publisher, isbn, source, pub_date, language):
     book = epub.EpubBook()
     
     # Set EPUB metadata fields
@@ -56,6 +56,8 @@ def create_epub_file(filepath_base, title, author, isbn, source, pub_date, langu
     book.set_title(title or "Unknown Title")
     book.set_language(language or "en")
     book.add_author(author or "Unknown Author")
+    if publisher:
+        book.add_metadata('DC', 'publisher', publisher)
     book.add_metadata('DC', 'source', source or "")
     book.add_metadata('DC', 'date', pub_date or "")
     book.add_metadata('DC', 'subject', 'Physical')
@@ -63,6 +65,7 @@ def create_epub_file(filepath_base, title, author, isbn, source, pub_date, langu
     # Visible chapter
     content_html = f"""<h1>{title}</h1>
 <p><strong>Author:</strong> {author}</p>
+<p><strong>Publisher:</strong> {publisher}</p>
 <p><strong>ISBN:</strong> {isbn}</p>
 <p><strong>Source:</strong> {source}</p>
 <p><strong>Publication Date:</strong> {pub_date}</p>
@@ -117,6 +120,9 @@ def main():
         for row in tqdm(df.itertuples(index=False), total=len(df), desc="Creating files"):
             title = str(getattr(row, 'Title', '')).strip()
             author = str(getattr(row, 'Author', '')).strip()
+            publisher = str(getattr(row, 'Publisher', '')).strip()
+            if publisher.lower() == "unknown":
+                publisher = ""
             isbn = str(getattr(row, 'ISBN', '')).strip()
             source = str(getattr(row, 'Source', '')).strip()
             pub_date = str(getattr(row, 'Publication Date', '')).strip()
@@ -133,6 +139,7 @@ def main():
                     f.write("[metadata]\n")
                     f.write(f"title={title}\n")
                     f.write(f"author={author}\n")
+                    f.write(f"publisher={publisher}\n")
                     f.write(f"ISBN={isbn}\n")
                     f.write(f"source={source}\n")
                     f.write(f"publication_date={pub_date}\n")
@@ -143,7 +150,7 @@ def main():
             
             # Create EPUB if enabled
             if CREATE_EPUB:
-                create_epub_file(filepath_base, title, author, isbn, source, pub_date, language)
+                create_epub_file(filepath_base, title, author, publisher, isbn, source, pub_date, language)
             
             # Log entry
             log_file.write(f"{os.path.basename(pbook_path)}\t{author}\t{title}\t{truncated}\t{renamed}\n")

@@ -9,15 +9,16 @@ This Python script reads an Excel file with book metadata and generates **EPUB f
 - Reads an Excel file with columns:
   - `Title`
   - `Author`
-  - `Publisher` *(optional, not used in metadata but can be added)*
+  - `Publisher` *(optional, empty if unknown)*
   - `Publication Date`
   - `ISBN`
   - `Source`
   - `Language` *(optional, defaults to `en`)*
 - Creates **EPUB files** with:
   - Title, Author, ISBN, Source, Publication Date, Language
+  - Publisher (if not unknown)
   - Tag/Subject: `Physical`
-- Optional `.pbook` file creation (includes `tag=Physical`)
+- Optional `.pbook` file creation (includes `publisher` if valid and `tag=Physical`)
 - Windows-safe filenames with intelligent truncation and uniqueness handling.
 - Tab-separated log file listing all generated files.
 - Progress bar for monitoring conversion.
@@ -88,9 +89,9 @@ python create_books.py --log /path/to/mylog.txt
 
 Excel row:
 
-| Title | Author | Publication Date | ISBN | Source | Language |
-|-------|--------|-----------------|------|--------|---------|
-| My Book | John Doe | 2025-01-01 | 1234567890 | LocalLibrary | en |
+| Title | Author | Publisher | Publication Date | ISBN | Source | Language |
+|-------|--------|-----------|-----------------|------|--------|---------|
+| My Book | John Doe | Example Publisher | 2025-01-01 | 1234567890 | LocalLibrary | en |
 
 Generated files:
 
@@ -101,6 +102,7 @@ EPUB metadata:
 
 - Title: `My Book`
 - Author: `John Doe`
+- Publisher: `Example Publisher`
 - ISBN: `1234567890`
 - Source: `LocalLibrary`
 - Publication Date: `2025-01-01`
@@ -113,12 +115,15 @@ EPUB metadata:
 [metadata]
 title=My Book
 author=John Doe
+publisher=Example Publisher
 ISBN=1234567890
 source=LocalLibrary
 publication_date=2025-01-01
 language=en
 tag=Physical
 ```
+
+> If the Publisher in Excel is "unknown", it will appear empty in both EPUB and `.pbook` files.
 
 ---
 
